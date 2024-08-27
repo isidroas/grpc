@@ -39,11 +39,11 @@ using grpc::Status;
 using helloworld::Greeter;
 using helloworld::HelloReply;
 using helloworld::HelloRequest;
+using helloworld::HelloOneOf;
 
 class GreeterClient {
  public:
-  GreeterClient(std::shared_ptr<Channel> channel)
-      : stub_(Greeter::NewStub(channel)) {}
+  GreeterClient(std::shared_ptr<Channel> channel) : stub_(Greeter::NewStub(channel)) {}
 
   // Assembles the client's payload, sends it and presents the response back
   // from the server.
@@ -72,6 +72,34 @@ class GreeterClient {
     }
   }
 
+  std::string SayHelloAgain(const std::string& some_string, int some_int=0) {
+    // Data we are sending to the server.
+    HelloOneOf request;
+    if (some_int)
+      request.set_some_int(some_int);
+    else
+      request.set_some_string(some_string);
+
+    // Container for the data we expect from the server.
+    HelloReply reply;
+
+    // Context for the client. It could be used to convey extra information to
+    // the server and/or tweak certain RPC behaviors.
+    ClientContext context;
+
+    // The actual RPC.
+    Status status = stub_->SayHelloAgain(&context, request, &reply);
+
+    // Act upon its status.
+    if (status.ok()) {
+      return reply.message();
+    } else {
+      std::cout << status.error_code() << ": " << status.error_message()
+                << std::endl;
+      return "RPC failed";
+    }
+  }
+
  private:
   std::unique_ptr<Greeter::Stub> stub_;
 };
@@ -89,6 +117,13 @@ int main(int argc, char** argv) {
   std::string user("world");
   std::string reply = greeter.SayHello(user);
   std::cout << "Greeter received: " << reply << std::endl;
+
+  std::string user2("WORLD");
+  std::string reply2 = greeter.SayHelloAgain(user2);
+  std::cout << "Greeter received again: " << reply2 << std::endl;
+
+  reply2 = greeter.SayHelloAgain(user2, 30);
+  std::cout << "Greeter received again II: " << reply2 << std::endl;
 
   return 0;
 }
