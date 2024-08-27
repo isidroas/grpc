@@ -37,13 +37,14 @@ using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
 using helloworld::Greeter;
+using helloworld::HelloOneOf;
 using helloworld::HelloReply;
 using helloworld::HelloRequest;
-using helloworld::HelloOneOf;
 
 class GreeterClient {
  public:
-  GreeterClient(std::shared_ptr<Channel> channel) : stub_(Greeter::NewStub(channel)) {}
+  GreeterClient(std::shared_ptr<Channel> channel)
+      : stub_(Greeter::NewStub(channel)) {}
 
   // Assembles the client's payload, sends it and presents the response back
   // from the server.
@@ -72,7 +73,7 @@ class GreeterClient {
     }
   }
 
-  std::string SayHelloAgain(const std::string& some_string, int some_int=0) {
+  std::string SayHelloAgain(const std::string& some_string, int some_int = 0) {
     // Data we are sending to the server.
     HelloOneOf request;
     if (some_int)
