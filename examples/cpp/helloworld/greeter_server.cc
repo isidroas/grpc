@@ -39,9 +39,9 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 using helloworld::Greeter;
+using helloworld::HelloOneOf;
 using helloworld::HelloReply;
 using helloworld::HelloRequest;
-using helloworld::HelloOneOf;
 
 ABSL_FLAG(uint16_t, port, 50051, "Server port for the service");
 
@@ -54,7 +54,7 @@ class GreeterServiceImpl final : public Greeter::Service {
     return Status::OK;
   }
   Status SayHelloAgain(ServerContext* context, const HelloOneOf* request,
-                  HelloReply* reply) override {
+                       HelloReply* reply) override {
     std::string prefix("HELLO ");
     if (request->has_some_string())
       reply->set_message(prefix + request->some_string());
